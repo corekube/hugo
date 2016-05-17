@@ -1,0 +1,41 @@
+build:
+  box: golang
+  # The steps that will be executed in the BUILD pipeline
+  steps:
+    # Build hugo
+    - script:
+        name: setup hugo
+        code: |
+          version="0.15"
+          wget https://github.com/spf13/hugo/releases/download/v$version/hugo_${version}_linux_amd64.tar.gz
+          tar xvfz hugo*.tar.gz
+          mv hugo*/hugo* /usr/local/bin/hugo
+
+          mkdir -p /src /dest
+          git clone https://github.com/mpas/hugo-multi-bootswatch /src/themes/hugo-multi-bootswatch
+
+          cp run-hugo /run-hugo
+
+    # Test hugo
+    - script:
+        name: test hugo
+        code: |
+          ./hack/test-hugo.sh
+
+    # Build & push a container
+    - internal/docker-push:
+        username: $DOCKER_USERNAME
+        password: $DOCKER_PASSWORD
+        tag: $WERCKER_GIT_COMMIT
+        ports: "5000"
+        repository: $DOCKER_REPO
+        cmd: "server --source=${HUGO_SRC} --theme=${HUGO_THEME} --baseUrl=${HUGO_BASE_URL} --watch --destination=${HUGO_DEST} --appendPort=false"
+        entrypoint: /run-hugo
+
+  # Notify slack of build status
+  after-steps:
+    # Notify slack
+    - slack-notifier:
+        url: $SLACK_URL
+        channel: notifications
+        username: $SLACK_USER
