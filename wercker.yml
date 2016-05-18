@@ -12,7 +12,8 @@ build:
           mv hugo*/hugo* /usr/local/bin/hugo
 
           mkdir -p /src /dest
-          git clone https://github.com/mpas/hugo-multi-bootswatch /src/themes/hugo-multi-bootswatch
+          git clone https://github.com/mpas/hugo-multi-bootswatch /themes/hugo-multi-bootswatch
+          ln -s /themes /src/themes
 
           cp run-hugo /run-hugo
 
