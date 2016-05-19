@@ -1,5 +1,7 @@
 # hugo
 
+foobar2
+
 [![wercker
 status](https://app.wercker.com/status/ac755066dea0102e3d68011a6ea9d413/m
 "wercker
